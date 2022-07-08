@@ -10,12 +10,13 @@ fn main() {
     handlebars
         .register_template_file("header_template", "./header.hbs.h")
         .unwrap();
+
     // Clean up output directory
     fs::remove_dir_all("output").ok();
     fs::create_dir("output").expect("Couldn't create the output directory");
     let mut output_file = File::create("output/header.h").expect("Couldn't create header file");
 
-    // Read from CSV
+    // Read from CSV file into a string
     let file_contents =
         fs::read_to_string(CSV_FILENAME).expect("Something went wrong reading the file");
 
@@ -27,7 +28,7 @@ fn main() {
         items.push(row);
     }
 
-    let template_context = TemplateContext::new(items);
+    let template_context = TemplateContext { items };
 
     // Render in template to file
     handlebars
@@ -47,10 +48,4 @@ struct Row {
 #[derive(Debug, Deserialize, Serialize)]
 struct TemplateContext {
     items: Vec<Row>,
-}
-
-impl TemplateContext {
-    fn new(items: Vec<Row>) -> TemplateContext {
-        TemplateContext { items }
-    }
 }
